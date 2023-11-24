@@ -76,7 +76,7 @@ function History() {
                   >
                     <div className="flex items-center ">
                       <div className="h-[60px] w-[45px] object-cover  flex items-center justify-center overflow-hidden">
-                        <Image src={image} alt="" layout="fill" />
+                        <Image src={image} alt=""  />
                       </div>
                       <p className="font-notosans font-[500] text-[14px]">
                         Premium Suit
@@ -110,7 +110,7 @@ function History() {
                   >
                     <div className="flex items-center ">
                       <div className="h-[60px] w-[45px] object-cover  flex items-center justify-center overflow-hidden">
-                        <Image src={image2} alt="" layout="fill" />
+                        <Image src={image2} alt=""  />
                       </div>
                       <p className="font-notosans font-[500] text-[14px]">
                         Linen Suit
@@ -145,7 +145,7 @@ function History() {
                   >
                     <div className="flex items-center ">
                       <div className="h-[60px] w-[45px] object-cover  flex items-center justify-center overflow-hidden">
-                        <Image src={image} alt="" layout="fill" />
+                        <Image src={image} alt=""  />
                       </div>
                       <p className="font-notosans font-[500] text-[14px]">
                         Tweed Suit
@@ -238,7 +238,7 @@ function History() {
                   >
                     <div className="flex items-center ">
                       <div className="h-[60px] w-[45px] object-cover  flex items-center justify-center overflow-hidden">
-                        <Image src={image} alt="" layout="fill" />
+                        <Image src={image} alt=""  />
                       </div>
                       <p className="font-notosans font-[500] text-[14px]">
                         Pink Blouse
@@ -272,7 +272,7 @@ function History() {
                   >
                     <div className="flex items-center ">
                       <div className="h-[60px] w-[45px] object-cover  flex items-center justify-center overflow-hidden">
-                        <Image src={image2} alt="" layout="fill" />
+                        <Image src={image2} alt=""  />
                       </div>
                       <p className="font-notosans font-[500] text-[14px]">
                         Premium Suit
