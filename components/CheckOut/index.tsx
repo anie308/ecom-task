@@ -4,22 +4,13 @@ import React, { useContext } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import Image from "next/image";
-import { mock } from "@/mock";
 import { CombinedContext } from "@/context";
+import { CombinedContextProps, FormState, Item } from "@/types";
+import { formatCardNumber, formatExpiryDate } from "@/utils";
+import { useRouter } from "next/router";
+import toast from 'react-hot-toast';
 function CheckOut() {
-  type FormState = {
-    email: string;
-    cardName: string;
-    cardNumber: string;
-    exp: string;
-    cvc: string;
-    address: string;
-    city: string;
-    country: string;
-    postal: string;
-    billing: boolean;
-  };
-
+  const router = useRouter()
   const initialFormValues: FormState = {
     email: "",
     cardName: "",
@@ -43,10 +34,32 @@ function CheckOut() {
     cvc: yup.string().max(3).required("Required"),
     exp: yup.string().required("Required"),
     address: yup.string().required("Required"),
+    city: yup.string().required("Required"),
+    country: yup.string().required("Required"),
+    postal: yup.string().required("Required"),
   });
 
-  const checkout = (values: FormState) => {
-    console.log(values);
+  const {
+    cart,
+    tax,
+    shipping,
+    cartSubTotal,
+    cartTotalAmount,
+    discount,
+    updateUserDetails,
+    addToOrderHistory,
+  } = useContext<CombinedContextProps>(CombinedContext);
+
+  const checkout = async (values: FormState) => {
+    try {
+     
+      await updateUserDetails(values);
+      await addToOrderHistory();
+      toast.success('Checkout Successful')
+      router.push('/order-detail')
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const form = useFormik({
@@ -55,23 +68,40 @@ function CheckOut() {
     validateOnBlur: true,
     validateOnChange: true,
     validateOnMount: true,
-    onSubmit: checkout,
+    onSubmit: () => checkout(form.values),
   });
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Format the card number before updating the form state
+    const formattedCardNumber = formatCardNumber(e.target.value);
+
+    // Update the form state with the formatted card number
+    handleChange({
+      target: {
+        id: "cardNumber",
+        value: formattedCardNumber,
+      },
+    });
+  };
+
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Format the expiry date before updating the form state
+    const formattedExpiryDate = formatExpiryDate(e.target.value);
+
+    // Update the form state with the formatted expiry date
+    handleChange({
+      target: {
+        id: "exp",
+        value: formattedExpiryDate,
+      },
+    });
+  };
 
   const { handleChange, isSubmitting, handleSubmit, values, errors, touched } =
     form;
 
-  const {
-    cart,
-    cartTotalQuantity,
-    cartSubTotal,
-    cartTotalAmount,
-    discount,
-    applyDiscount,
-  } = useContext(CombinedContext);
-
   return (
-    <div className="bg-[#F9FAFB]  lg:m-h-screen w-full flex flex-col lg:flex-row">
+    <div className="bg-[#F9FAFB]  lg:min-h-screen w-full flex flex-col lg:flex-row">
       <section className="w-full lg:w-[65%] p-[20px] md:p-[50px_100px] xl:p-[50px_200px] flex-col space-y-[36px] items-center justify-center">
         <div>
           <button className="flex items-center border h-[40px]  rounded-[6px] bg-white w-full justify-center space-x-[4px] border-[#ADB5BD]">
@@ -144,9 +174,12 @@ function CheckOut() {
             <input
               type="text"
               id="cardNumber"
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                handleCardNumberChange(e);
+              }}
               value={values.cardNumber}
-              maxLength={16}
+              maxLength={19}
               className="p-[11px_12px] font-notosans text-[13px] text-primary w-full rounded-[6px] border placeholder:text-secondary placeholder:font-notosans placeholder:text-[14px] outline-none"
               placeholder="Enter the cardholder’s name"
             />
@@ -167,8 +200,12 @@ function CheckOut() {
               <input
                 type="text"
                 id="exp"
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e);
+                  handleExpiryDateChange(e);
+                }}
                 value={values.exp}
+                maxLength={5}
                 className="p-[11px_12px] font-notosans text-[13px] text-primary w-full rounded-[6px] border placeholder:text-secondary placeholder:font-notosans placeholder:text-[14px] outline-none"
                 placeholder="Enter the date"
               />
@@ -234,10 +271,17 @@ function CheckOut() {
               <input
                 type="text"
                 id="city"
+                onChange={handleChange}
+                value={values.city}
                 autoComplete="true"
                 className="p-[11px_12px] font-notosans text-[13px] text-primary w-full rounded-[6px] border placeholder:text-secondary placeholder:font-notosans placeholder:text-[14px] outline-none"
                 placeholder="Enter City"
               />
+              {errors.city && touched.city && (
+                <p className="text-[12px] text-red-500 font-notosans">
+                  {errors.address}
+                </p>
+              )}
             </div>
             <div className="flex flex-col space-y-[4px]">
               <label
@@ -249,10 +293,17 @@ function CheckOut() {
               <input
                 type="text"
                 id="country"
+                onChange={handleChange}
+                value={values.country}
                 autoComplete="true"
                 className="p-[11px_12px] font-notosans text-[13px] text-primary w-full rounded-[6px] border placeholder:text-secondary placeholder:font-notosans placeholder:text-[14px] outline-none"
                 placeholder="Enter your country"
               />
+              {errors.country && touched.country && (
+                <p className="text-[12px] text-red-500 font-notosans">
+                  {errors.address}
+                </p>
+              )}
             </div>
             <div className="flex flex-col space-y-[4px]">
               <label
@@ -264,20 +315,27 @@ function CheckOut() {
               <input
                 type="text"
                 id="postal"
+                onChange={handleChange}
+                value={values.postal}
                 className="p-[11px_12px] font-notosans text-[13px] text-primary w-full rounded-[6px] border placeholder:text-secondary placeholder:font-notosans placeholder:text-[14px] outline-none"
                 placeholder="Postal code"
               />
+              {errors.postal && touched.postal && (
+                <p className="text-[12px] text-red-500 font-notosans">
+                  {errors.postal}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center space-x-[4px] cursor-pointer">
             <input
-              className="h-[24px] w-[24px] text-primary checked:text-primary"
+              className="h-[15px] lg:h-[24px] w-[15px lg:w-[24px] text-primary checked:text-primary"
               type="checkbox"
               id="checkbox"
             />
             <label
               htmlFor="checkbox"
-              className="cursor-pointer font-notosans text-[14px]"
+              className="cursor-pointer font-notosans text-[12px] lg:text-[14px]"
             >
               Billing address the same as shipping address
             </label>
@@ -296,21 +354,20 @@ function CheckOut() {
       </section>
       <section className="w-full lg:w-[35%] bg-primary p-[50px_20px]  flex flex-col ">
         <div>
-          {mock.map(
+          {cart.map(
             (
-              { id, title, image, discount, size, material, price },
-              index,
-              array
+              { id, title, image, discount, size, material, price }: Item,
+              index: number
             ) => (
               <div
                 className={`${
-                  index !== array.length - 1
+                  index !== cart.length - 1
                     ? "border-b border-[#e0e1e215]"
                     : "border-b border-[#e0e1e215]"
-                } flex  items-center space-x-[30px] py-[24px] `}
+                } flex flex-col lg:flex-row  lg:items-center lg:space-x-[30px] py-[24px] `}
                 key={id}
               >
-                <div className="h-[180px] w-[175px] overflow-hidden ">
+                <div className="h-[180px] w-full lg:w-[175px] overflow-hidden ">
                   <Image
                     src={image}
                     className="object-cover"
@@ -318,7 +375,7 @@ function CheckOut() {
                     layout="fill"
                   />
                 </div>
-                <div className="flex flex-col items-start space-y-[15px]">
+                <div className="flex flex-col items-start space-y-[15px] mt-[10px] lg:mt-0">
                   <div className="flex flex-col space-y-[4px]">
                     <h5 className="text-[20px] font-[600] font-notosans text-white">
                       {title}
@@ -349,12 +406,58 @@ function CheckOut() {
         <div className="mt-[31px]">
           <div className="flex flex-col lg:flex-row items-end lg:space-x-[16px]">
             <div className="flex flex-col w-full lg:w-[60%]">
-              <label htmlFor="discount" className="text-white font-notosans text-[13px] font-[600]">Discount</label>
-              <input type="text" className="w-full  p-[10px] outline-none rounded-[6px]" />
+              <label
+                htmlFor="discount"
+                className="text-white font-notosans text-[13px] font-[600] mb-[5px]"
+              >
+                Discount
+              </label>
+              <input
+                id="discount"
+                type="text"
+                className="w-full  p-[10px] outline-none rounded-[6px]"
+              />
             </div>
-            <button className="text-white font-notosans font-[600] text-[16px]  h-fit p-[10px]">Apply</button>
+            <button className="text-white border w-full lg:w-fit mt-[20px] lg:mt-0 rounded-[6px] font-notosans font-[600] text-[16px]  h-fit p-[10px]">
+              Apply
+            </button>
           </div>
-          <div></div>
+          <div className="flex flex-col space-y-[8px] mt-[31px] ">
+            <div className="flex items-center justify-between">
+              <p className="text-white font-notosans text-[16px]">Subtotal</p>
+              <p className="text-white font-notosans text-[16px]">
+                ${cartSubTotal}
+              </p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-notosans text-[16px]">Discount</p>
+              <p className="text-white font-notosans text-[16px]">
+                -${discount}
+              </p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-notosans text-[16px]">
+                Tax estimate
+              </p>
+              <p className="text-white font-notosans text-[16px]">${tax}</p>
+            </div>
+            <div className="flex items-center justify-between">
+              <p className="text-white font-notosans text-[16px]">
+                Shipping estimate
+              </p>
+              <p className="text-white font-notosans text-[16px]">
+                ${shipping}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-[50px]">
+            <p className="text-white font-notosans font-[600] text-[20px]">
+              Order Total
+            </p>
+            <p className="text-white font-notosans text-[20px] font-[600]">
+              ${cartTotalAmount}
+            </p>
+          </div>
         </div>
       </section>
     </div>
