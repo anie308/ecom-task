@@ -1,6 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { CiSearch } from "react-icons/ci";
+import heart from '../../assets/svgs/heart.svg'
+import cart from '../../assets/svgs/cart.svg'
+import profile from '../../assets/svgs/avatar.svg'
+import curr from '../../assets/svgs/curr.svg'
 function Header() {
   return (
    <div>
@@ -9,8 +14,11 @@ function Header() {
         <p className="font-[700] text-[18px] font-notosans text-white">
           Astro Ecommerce
         </p>
-        <div>
-          loll
+        <div className="hidden lg:flex items-center mt-[10px] lg:mt-0 space-x-[24px]">
+          <Image src={cart} alt='' />
+          <Image src={heart} alt='' />
+          <Image src={curr} alt='' />
+          <Image src={profile} alt='' />
         </div>
       </div>
       <div className="border-t border-[#DEE2E6] p-[20px] lg:p-[20px_50px] flex items-center justify-between flex-col lg:flex-row ">
