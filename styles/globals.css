@@ -4,5 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@variants checked {
+    .checked\:text-primary {
+      color: #0F172A;
+    }
+  }
+
 
 

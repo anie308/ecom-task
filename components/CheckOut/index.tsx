@@ -8,9 +8,9 @@ import { CombinedContext } from "@/context";
 import { CombinedContextProps, FormState, Item } from "@/types";
 import { formatCardNumber, formatExpiryDate } from "@/utils";
 import { useRouter } from "next/router";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 function CheckOut() {
-  const router = useRouter()
+  const router = useRouter();
   const initialFormValues: FormState = {
     email: "",
     cardName: "",
@@ -37,6 +37,8 @@ function CheckOut() {
     city: yup.string().required("Required"),
     country: yup.string().required("Required"),
     postal: yup.string().required("Required"),
+    billing: yup.boolean().oneOf([true], "Billing address must be the same as shipping address").required("You must accept the billing agreement"),
+    // other fields...,
   });
 
   const {
@@ -52,11 +54,10 @@ function CheckOut() {
 
   const checkout = async (values: FormState) => {
     try {
-     
       await updateUserDetails(values);
       await addToOrderHistory();
-      toast.success('Checkout Successful')
-      router.push('/order-detail')
+      toast.success("Checkout Successful");
+      router.push("/order-detail");
     } catch (error) {
       console.log(error);
     }
@@ -99,6 +100,15 @@ function CheckOut() {
 
   const { handleChange, isSubmitting, handleSubmit, values, errors, touched } =
     form;
+
+    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleChange({
+        target: {
+          id: "billing",
+          value: e.target.checked,
+        },
+      });
+    };
 
   return (
     <div className="bg-[#F9FAFB]  lg:min-h-screen w-full flex flex-col lg:flex-row">
@@ -332,6 +342,8 @@ function CheckOut() {
               className="h-[15px] lg:h-[24px] w-[15px lg:w-[24px] text-primary checked:text-primary"
               type="checkbox"
               id="checkbox"
+              checked={values.billing}
+              onChange={handleCheckboxChange}
             />
             <label
               htmlFor="checkbox"
@@ -340,6 +352,11 @@ function CheckOut() {
               Billing address the same as shipping address
             </label>
           </div>
+          {errors.billing && touched.billing && (
+            <p className="text-[12px] text-red-500 font-notosans">
+              {errors.billing}
+            </p>
+          )}
         </div>
         <div className="mt-[36px]">
           <button
