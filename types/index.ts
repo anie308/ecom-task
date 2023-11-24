@@ -1,3 +1,4 @@
+import { FormikHelpers } from "formik";
 import { StaticImageData } from "next/image";
 import { ReactNode } from "react";
 
@@ -62,4 +63,14 @@ export type CombinedContextProps = {
   updateUserDetails: (newDetails: Partial<UserDetails>) => void;
   addToOrderHistory: () => void;
   applyDiscount: (discount: number) => void;
+};
+
+export type CheckoutFormType = {
+  handleChange: (e: React.ChangeEvent<any>) => void;
+  isSubmitting: boolean;
+  handleSubmit: (values: FormState, actions: FormikHelpers<FormState>) => void;
+  values: FormState;
+  errors: Record<string, string>;
+  touched: Record<string, boolean>;
+  // Add other properties as needed based on the useFormik hook
 };

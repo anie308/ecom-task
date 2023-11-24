@@ -50,7 +50,7 @@ function CheckOut() {
     discount,
     updateUserDetails,
     addToOrderHistory,
-  } = useContext<CombinedContextProps>(CombinedContext);
+  } = useContext(CombinedContext) as CombinedContextProps;
 
   const checkout = async (values: FormState) => {
     try {
@@ -98,7 +98,12 @@ function CheckOut() {
     });
   };
 
-  const { handleChange, isSubmitting, handleSubmit, values, errors, touched } =
+  const { handleChange,
+     isSubmitting,
+      handleSubmit,
+       values,
+        errors,
+         touched } =
     form;
 
     const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,7 +344,7 @@ function CheckOut() {
           </div>
           <div className="flex items-center space-x-[4px] cursor-pointer">
             <input
-              className="h-[15px] lg:h-[24px] w-[15px lg:w-[24px] text-primary checked:text-primary"
+              className="h-[15px] lg:h-[24px] w-[15px] lg:w-[24px] text-primary checked:text-primary"
               type="checkbox"
               id="checkbox"
               checked={values.billing}
