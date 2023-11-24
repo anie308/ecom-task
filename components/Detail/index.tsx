@@ -22,7 +22,7 @@ function Details() {
           <div className="flex flex-col space-y-[16px] mt-[12px]">
             <div className="border bg-white rounded-[6px] p-[20px] flex items-start lg:items-center flex-col lg:flex-row lg:space-x-[30px]">
               <div className="border rounded-[6px] h-[140px] min-w-[140px] overflow-hidden">
-                <Image src={image} layout="fill" alt="" />
+                <Image src={image}  alt="" />
               </div>
               <div className="flex flex-col items-start justify-between mt-[10px] lg:mt-0 h-[140px] w-full lg:w-[50%]">
                 <h5 className="font-[600] text-[20px] font-notosans text-primary">
