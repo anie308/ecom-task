@@ -9,8 +9,12 @@ import { CombinedContextProps, FormState, Item } from "@/types";
 import { formatCardNumber, formatExpiryDate } from "@/utils";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
-function CheckOut() {
+
+
+
+function CheckOut () {
   const router = useRouter();
+
   const initialFormValues: FormState = {
     email: "",
     cardName: "",
@@ -37,7 +41,10 @@ function CheckOut() {
     city: yup.string().required("Required"),
     country: yup.string().required("Required"),
     postal: yup.string().required("Required"),
-    billing: yup.boolean().oneOf([true], "Billing address must be the same as shipping address").required("You must accept the billing agreement"),
+    billing: yup
+      .boolean()
+      .oneOf([true], "Billing address must be the same as shipping address")
+      .required("You must accept the billing agreement"),
     // other fields...,
   });
 
@@ -63,6 +70,15 @@ function CheckOut() {
     }
   };
 
+  // const form = useFormik({
+  //   validationSchema,
+  //   initialValues: initialFormValues,
+  //   validateOnBlur: true,
+  //   validateOnChange: true,
+  //   validateOnMount: true,
+  //   onSubmit: () => checkout(form.values),
+  // });
+
   const form = useFormik({
     validationSchema,
     initialValues: initialFormValues,
@@ -71,7 +87,6 @@ function CheckOut() {
     validateOnMount: true,
     onSubmit: () => checkout(form.values),
   });
-
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Format the card number before updating the form state
     const formattedCardNumber = formatCardNumber(e.target.value);
@@ -98,22 +113,17 @@ function CheckOut() {
     });
   };
 
-  const { handleChange,
-     isSubmitting,
-      handleSubmit,
-       values,
-        errors,
-         touched } =
+  const { handleChange, isSubmitting, handleSubmit, values, errors, touched } =
     form;
 
-    const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleChange({
-        target: {
-          id: "billing",
-          value: e.target.checked,
-        },
-      });
-    };
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange({
+      target: {
+        id: "billing",
+        value: e.target.checked,
+      },
+    });
+  };
 
   return (
     <div className="bg-[#F9FAFB]  lg:min-h-screen w-full flex flex-col lg:flex-row">
@@ -394,7 +404,7 @@ function CheckOut() {
                     src={image}
                     className="object-cover"
                     alt="product-thumb"
-                    layout="fill"
+                    
                   />
                 </div>
                 <div className="flex flex-col items-start space-y-[15px] mt-[10px] lg:mt-0">
@@ -484,6 +494,6 @@ function CheckOut() {
       </section>
     </div>
   );
-}
+};
 
 export default CheckOut;
